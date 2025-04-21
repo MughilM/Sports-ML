@@ -11,26 +11,6 @@ from spock import spock, directory, file
 from typing import List, Optional
 
 @spock
-class ClassOne:
-    one: int
-    two: str
-
-
-@spock
-class ClassTwo:
-    one: int
-    two: str
-
-
-class ClassChoice(Enum):
-    class_one = ClassOne
-    class_two = ClassTwo
-
-@spock
-class TypeConfig:
-    param: List[ClassChoice]
-
-@spock
 class ModelCheckpointConfig:
     dirpath: directory = os.path.join("${spock.var:PathsConfig.log_dir", "checkpoints")
     filename: str = "epoch_{epoch:03d}"
@@ -61,10 +41,6 @@ class CallbackChoice(Enum):
     rich_progress_bar = 'rich_progress_bar'
     plot_confusion_matrix = 'plot_confusion_matrix'
 
-@spock
-class CallbackConfig:
-    callbacks: List[CallbackChoice]
-
 
 @spock
 class PathsConfig:
@@ -80,3 +56,50 @@ class PathsConfig:
     root_dir: directory = "${spock.env:PROJECT_ROOT}"
     data_dir: directory = os.path.join("${spock.var:PathsConfig.root_dir}", "data")
     log_dir: directory = os.path.join("${spock.var:PathsConfig.root_dir}", "logs")
+
+@spock
+class KaggleDataConfig:
+    comp_name: str = 'histopathologic-cancer-detection'
+    data_dir: directory = "${spock.var:PathsConfig.data_dir}"
+    downsample_n: int = -1
+    train_frac: float = 1.0
+    validation_split: float = 0.2
+    batch_size: int = 128
+    num_workers: int = -1
+    pin_memory: bool = True
+
+@spock
+class CancerDataConfig(KaggleDataConfig):
+    image_size: int = 32
+
+class DataChoice(Enum):
+    cancer_data = 'cancer_data'
+
+class ModelChoice(Enum):
+    simple_conv = 'simple_conv'
+    resnet = 'resnet'
+    vit = 'vit'
+
+@spock
+class SimpleConvConfig:
+    name: str = 'simple_conv'
+    output_size: int = 1
+
+@spock
+class ResNetConfig:
+    name: str = 'resnet'
+    output_size: int = 1
+    finetune: bool = False
+
+@spock
+class ViTConfig:
+    name: str = 'vit'
+    output_size: int = 1
+    pretrained: bool = True
+
+@spock
+class RunConfig:
+    callbacks: List[CallbackChoice] = ['model_checkpoint', 'rich_progress_bar']
+    datamodule: DataChoice
+    net: ModelChoice
+

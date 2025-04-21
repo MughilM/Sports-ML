@@ -1,0 +1,16 @@
+# Nested List configuration
+#CallbackConfig:
+#  callbacks: [model_checkpoint, rich_progress_bar]
+
+ModelCheckpointConfig:
+  monitor: "train/acc"
+
+RichProgressBarConfig:
+  refresh_rate: 2
+
+PlotConfusionMatrixConfig:
+  matrix_attr: "matrix_2"
+
+RunConfig:
+  datamodule: cancer_data
+  net: simple_conv

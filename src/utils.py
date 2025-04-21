@@ -4,7 +4,7 @@
 #
 # Contains various utility functions, mostly revolving around argument parsing.
 # Spock allows for exact configs, but class instantiation still needs to be done manually.
-from src.spock_configs import CallbackConfig, ModelCheckpointConfig
+from src.spock_configs import RunConfig, ModelCheckpointConfig
 from spock.backend.wrappers import Spockspace
 from pytorch_lightning.callbacks import ModelCheckpoint, RichProgressBar, Callback
 from src.custom_callbacks import *
@@ -12,7 +12,7 @@ from typing import List
 
 
 def instantiate_callbacks(config: Spockspace):
-    callback_list = config.CallbackConfig.callbacks
+    callback_list = config.RunConfig.callbacks
     # Only a few callbacks are allowed, but this logic is taken care of by Spock
     # due to using the CallbackChoice Enum.
     callbacks: List[Callback] = []  # The list that will actually contain the objects
@@ -48,3 +48,6 @@ def instantiate_callbacks(config: Spockspace):
                     val_acc_attr=cfg.val_acc_attr
                 ))
     return callbacks
+
+# def instantiate_model(config: Spockspace):
+#     cfg =
