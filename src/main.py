@@ -29,7 +29,7 @@ from pytorch_lightning.callbacks import Callback, RichProgressBar
 from spock import SpockBuilder
 
 from src.spock_configs import *
-from src.utils import instantiate_callbacks
+from src.utils import instantiate_callbacks, instantiate_model
 from src.datasets import *
 from src.datamodules import *
 
@@ -74,9 +74,10 @@ def main():
         )
         datamodule.prepare_data()
         datamodule.setup()
-        dataset = datamodule.vali_dataset
-        for image, labels in dataset:
-            print(image, labels, image.shape, labels.shape)
+
+    print('Instantiating model...')
+    net = instantiate_model(config)
+    print(net)
 
 
 if __name__ == "__main__":

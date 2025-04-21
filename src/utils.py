@@ -4,6 +4,7 @@
 #
 # Contains various utility functions, mostly revolving around argument parsing.
 # Spock allows for exact configs, but class instantiation still needs to be done manually.
+from src.nets import *
 from src.spock_configs import RunConfig, ModelCheckpointConfig
 from spock.backend.wrappers import Spockspace
 from pytorch_lightning.callbacks import ModelCheckpoint, RichProgressBar, Callback
@@ -49,5 +50,16 @@ def instantiate_callbacks(config: Spockspace):
                 ))
     return callbacks
 
-# def instantiate_model(config: Spockspace):
-#     cfg =
+def instantiate_model(config: Spockspace):
+    net_choice = config.RunConfig.net
+    match net_choice:
+        case 'simple_conv':
+            cfg = config.SimpleConvConfig
+            return SimpleConvNet(name=cfg.name, output_size=cfg.output_size)
+        case 'resnet50':
+            cfg = config.ResNetConfig
+            return ResNet(name=cfg.name, output_size=cfg.output_size, finetune=cfg.finetune)
+        case 'vit_b_16':
+            cfg = config.ViTConfig
+            return ViT(name=cfg.name, output_size=cfg.output_size, pretrained=cfg.pretrained)
+    return None
