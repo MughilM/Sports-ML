@@ -9,7 +9,7 @@ from src.spock_configs import RunConfig, ModelCheckpointConfig
 from spock.backend.wrappers import Spockspace
 from pytorch_lightning.callbacks import ModelCheckpoint, RichProgressBar, Callback
 from src.custom_callbacks import *
-from typing import List
+from typing import List, Optional
 
 
 def instantiate_callbacks(config: Spockspace):
@@ -50,7 +50,7 @@ def instantiate_callbacks(config: Spockspace):
                 ))
     return callbacks
 
-def instantiate_model(config: Spockspace):
+def instantiate_model(config: Spockspace) -> Optional[nn.Module]:
     net_choice = config.RunConfig.net
     match net_choice:
         case 'simple_conv':
@@ -62,4 +62,15 @@ def instantiate_model(config: Spockspace):
         case 'vit_b_16':
             cfg = config.ViTConfig
             return ViT(name=cfg.name, output_size=cfg.output_size, pretrained=cfg.pretrained)
+    return None
+
+def instantiate_optimizer(config: Spockspace, parameters) -> Optional[torch.optim]:
+    optimizer_choice = config.RunConfig.optimizer
+    match optimizer_choice:
+        case 'adam':
+            cfg = config.AdamConfig
+            return torch.optim.Adam(params=parameters, lr=cfg.lr)
+        case 'sgd':
+            cfg = config.SGDConfig
+            return torch.optim.SGD(params=parameters, lr=cfg.lr)
     return None

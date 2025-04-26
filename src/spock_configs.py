@@ -8,7 +8,7 @@
 import os
 from enum import Enum
 from spock import spock, directory, file
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 @spock
 class ModelCheckpointConfig:
@@ -98,8 +98,28 @@ class ViTConfig:
     pretrained: bool = True
 
 @spock
+class OptimizerConfig:
+    lr: float = 0.001
+    grad_clip: Optional[float]
+
+@spock
+class AdamConfig(OptimizerConfig):
+   betas: Optional[Tuple[float, float]] = (0.9, 0.999)
+   weight_decay: Optional[float] = 0.0
+
+@spock
+class SGDConfig(OptimizerConfig):
+    momentum: Optional[float] = 0.0
+    weight_decay: Optional[float] = 0.0
+
+class OptimizerChoice(Enum):
+    adam = 'adam'
+    sgd = 'sgd'
+
+@spock
 class RunConfig:
     callbacks: List[CallbackChoice] = ['model_checkpoint', 'rich_progress_bar']
     datamodule: DataChoice
     net: ModelChoice
+    optimizer: OptimizerChoice
 
