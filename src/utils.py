@@ -5,7 +5,6 @@
 # Contains various utility functions, mostly revolving around argument parsing.
 # Spock allows for exact configs, but class instantiation still needs to be done manually.
 from src.nets import *
-from src.spock_configs import RunConfig, ModelCheckpointConfig
 from spock.backend.wrappers import Spockspace
 from pytorch_lightning.callbacks import ModelCheckpoint, RichProgressBar, Callback
 from src.custom_callbacks import *
