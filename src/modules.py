@@ -16,7 +16,17 @@ from torchmetrics.classification import BinaryAccuracy
 
 import pytorch_lightning as pl
 from spock.backend.wrappers import Spockspace
-from src.utils import instantiate_optimizer
+
+def instantiate_optimizer(config: Spockspace, parameters) -> Optional[optim.Optimizer]:
+    optimizer_choice = config.RunConfig.optimizer
+    match optimizer_choice:
+        case 'adam':
+            cfg = config.AdamConfig
+            return torch.optim.Adam(params=parameters, lr=cfg.lr)
+        case 'sgd':
+            cfg = config.SGDConfig
+            return torch.optim.SGD(params=parameters, lr=cfg.lr)
+    return None
 
 class CancerImageClassifier(pl.LightningModule):
     def __init__(self, net: nn.Module, config: Spockspace):

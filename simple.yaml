@@ -14,3 +14,5 @@ PlotConfusionMatrixConfig:
 RunConfig:
   datamodule: cancer_data
   net: simple_conv
+  optimizer: adam
+  module: cancer_image_classifier

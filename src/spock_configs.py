@@ -116,10 +116,14 @@ class OptimizerChoice(Enum):
     adam = 'adam'
     sgd = 'sgd'
 
+class ModuleChoice(Enum):
+    cancer_image_classifier = 'cancer_image_classifier'
+
 @spock
 class RunConfig:
     callbacks: List[CallbackChoice] = ['model_checkpoint', 'rich_progress_bar']
     datamodule: DataChoice
     net: ModelChoice
     optimizer: OptimizerChoice
+    module: ModuleChoice
 

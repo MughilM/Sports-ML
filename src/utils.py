@@ -8,6 +8,7 @@ from src.nets import *
 from spock.backend.wrappers import Spockspace
 from pytorch_lightning.callbacks import ModelCheckpoint, RichProgressBar, Callback
 from src.custom_callbacks import *
+from src.modules import CancerImageClassifier
 from typing import List, Optional
 
 
@@ -49,7 +50,7 @@ def instantiate_callbacks(config: Spockspace):
                 ))
     return callbacks
 
-def instantiate_model(config: Spockspace) -> Optional[nn.Module]:
+def instantiate_net(config: Spockspace) -> Optional[nn.Module]:
     net_choice = config.RunConfig.net
     match net_choice:
         case 'simple_conv':
@@ -63,13 +64,9 @@ def instantiate_model(config: Spockspace) -> Optional[nn.Module]:
             return ViT(name=cfg.name, output_size=cfg.output_size, pretrained=cfg.pretrained)
     return None
 
-def instantiate_optimizer(config: Spockspace, parameters) -> Optional[torch.optim]:
-    optimizer_choice = config.RunConfig.optimizer
-    match optimizer_choice:
-        case 'adam':
-            cfg = config.AdamConfig
-            return torch.optim.Adam(params=parameters, lr=cfg.lr)
-        case 'sgd':
-            cfg = config.SGDConfig
-            return torch.optim.SGD(params=parameters, lr=cfg.lr)
+def instantiate_module(config: Spockspace, net_obj: nn.Module) -> Optional[pl.LightningModule]:
+    module_choice = config.RunConfig.module
+    match module_choice:
+        case 'cancer_image_classifier':
+            return CancerImageClassifier(net=net_obj, config=config)
     return None

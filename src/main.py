@@ -29,7 +29,7 @@ from pytorch_lightning.callbacks import Callback, RichProgressBar
 from spock import SpockBuilder
 
 from src.spock_configs import *
-from src.utils import instantiate_callbacks, instantiate_model
+from src.utils import instantiate_callbacks, instantiate_net, instantiate_module
 from src.datasets import *
 from src.datamodules import *
 
@@ -76,8 +76,9 @@ def main():
         datamodule.setup()
 
     print('Instantiating model...')
-    net = instantiate_model(config)
-    print(net)
+    net = instantiate_net(config)
+    model = instantiate_module(config, net)
+    print(model)
 
 
 if __name__ == "__main__":
