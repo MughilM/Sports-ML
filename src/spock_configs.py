@@ -64,8 +64,8 @@ class KaggleDataConfig:
     downsample_n: int = -1
     train_frac: float = 1.0
     validation_split: float = 0.2
-    batch_size: int = 128
-    num_workers: int = -1
+    batch_size: int = 256
+    num_workers: int = 8
     pin_memory: bool = True
 
 @spock
@@ -118,6 +118,17 @@ class OptimizerChoice(Enum):
 
 class ModuleChoice(Enum):
     cancer_image_classifier = 'cancer_image_classifier'
+
+@spock
+class TrainerConfig:
+    min_epochs: int = 1
+    max_epochs: int = 3
+    devices: int = 1
+    accelerator: str = 'gpu'
+    default_root_dir: directory = "${spock.var:PathsConfig.root_dir}"
+    check_val_every_n_epoch: int = 1
+    log_every_n_steps: int = 10
+    deterministic: bool = False
 
 @spock
 class RunConfig:

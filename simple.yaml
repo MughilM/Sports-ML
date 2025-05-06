@@ -16,3 +16,12 @@ RunConfig:
   net: simple_conv
   optimizer: adam
   module: cancer_image_classifier
+
+TrainerConfig:
+  min_epochs: 1
+  max_epochs: 3
+  devices: 1
+  accelerator: gpu
+  check_val_every_n_epoch: 1
+  log_every_n_steps: 10
+  deterministic: false

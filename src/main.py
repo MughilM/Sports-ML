@@ -46,7 +46,11 @@ def main():
         SimpleConvConfig,
         ResNetConfig,
         ViTConfig,
+        OptimizerConfig,
+        AdamConfig,
+        SGDConfig,
         RunConfig,
+        TrainerConfig,
         desc='A basic ML configuration'
     ).generate()
 
@@ -58,6 +62,7 @@ def main():
     print(config.PathsConfig)
 
     print('Instantiating datamodule...')
+    datamodule = Optional[LightningDataModule]
     dm_config = config.RunConfig.datamodule
     if dm_config == 'cancer_data':
         dm_config = config.CancerDataConfig
@@ -72,13 +77,30 @@ def main():
             pin_memory=dm_config.pin_memory,
             image_size=dm_config.image_size,
         )
-        datamodule.prepare_data()
-        datamodule.setup()
+    datamodule.prepare_data()
+    datamodule.setup()
 
     print('Instantiating model...')
     net = instantiate_net(config)
     model = instantiate_module(config, net)
     print(model)
+
+    print('Instantiating trainer...')
+    print(config.TrainerConfig)
+    trainer = Trainer(
+        min_epochs=config.TrainerConfig.min_epochs,
+        max_epochs=config.TrainerConfig.max_epochs,
+        devices=config.TrainerConfig.devices,
+        accelerator=config.TrainerConfig.accelerator,
+        check_val_every_n_epoch=config.TrainerConfig.check_val_every_n_epoch,
+        log_every_n_steps=config.TrainerConfig.log_every_n_steps,
+        deterministic=config.TrainerConfig.deterministic,
+        callbacks=callbacks
+    )
+
+    print('Starting training...')
+    trainer.fit(model, datamodule=datamodule)
+    print('Training complete!')
 
 
 if __name__ == "__main__":
