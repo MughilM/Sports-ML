@@ -9,6 +9,7 @@ from spock.backend.wrappers import Spockspace
 from pytorch_lightning.callbacks import ModelCheckpoint, RichProgressBar, Callback
 from src.custom_callbacks import *
 from src.modules import CancerImageClassifier
+from src.datamodules import CancerDataModule
 from typing import List, Optional
 
 
@@ -49,6 +50,24 @@ def instantiate_callbacks(config: Spockspace):
                     val_acc_attr=cfg.val_acc_attr
                 ))
     return callbacks
+
+def instantiate_datamodule(config: Spockspace) -> Optional[pl.LightningDataModule]:
+    datamodule: Optional[pl.LightningDataModule] = None
+    dm_config = config.RunConfig.datamodule
+    if dm_config == 'cancer_data':
+        dm_config = config.CancerDataConfig
+        datamodule = CancerDataModule(
+            comp_name=dm_config.comp_name,
+            data_dir=dm_config.data_dir,
+            downsample_n=dm_config.downsample_n,
+            train_frac=dm_config.train_frac,
+            validation_split=dm_config.validation_split,
+            batch_size=dm_config.batch_size,
+            num_workers=dm_config.num_workers,
+            pin_memory=dm_config.pin_memory,
+            image_size=dm_config.image_size,
+        )
+    return datamodule
 
 def instantiate_net(config: Spockspace) -> Optional[nn.Module]:
     net_choice = config.RunConfig.net

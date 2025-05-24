@@ -137,4 +137,5 @@ class RunConfig:
     net: ModelChoice
     optimizer: OptimizerChoice
     module: ModuleChoice
+    seed: int = 4104
 

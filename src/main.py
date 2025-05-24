@@ -29,9 +29,34 @@ from pytorch_lightning.callbacks import Callback, RichProgressBar
 from spock import SpockBuilder
 
 from src.spock_configs import *
-from src.utils import instantiate_callbacks, instantiate_net, instantiate_module
+from src.utils import instantiate_callbacks, instantiate_net, instantiate_module, instantiate_datamodule
 from src.datasets import *
 from src.datamodules import *
+import colorlog
+
+handler = colorlog.StreamHandler()
+handler.setFormatter(colorlog.ColoredFormatter(
+	'%(log_color)s%(asctime)s - %(name)s(%(funcName)s) - %(levelname)s || %(message)s',
+    datefmt=None,
+	reset=True,
+    log_colors={
+            'DEBUG':    'cyan',
+            'INFO':     'green',
+            'WARNING':  'yellow',
+            'ERROR':    'red',
+            'CRITICAL': 'red,bg_white',
+    },
+    secondary_log_colors={},
+    style='%'
+))
+
+logger = colorlog.getLogger('main')
+logger.addHandler(handler)
+
+logger.setLevel(logging.DEBUG)
+
+
+
 
 
 def main():
@@ -54,39 +79,23 @@ def main():
         desc='A basic ML configuration'
     ).generate()
 
-    print('Instantiating callbacks...')
+    logger.info('Instantiating callbacks...')
     callbacks = instantiate_callbacks(config)
 
-    print(callbacks)
+    logger.debug(callbacks)
 
-    print(config.PathsConfig)
+    logger.debug(config.PathsConfig)
 
-    print('Instantiating datamodule...')
-    datamodule = Optional[LightningDataModule]
-    dm_config = config.RunConfig.datamodule
-    if dm_config == 'cancer_data':
-        dm_config = config.CancerDataConfig
-        datamodule = CancerDataModule(
-            comp_name=dm_config.comp_name,
-            data_dir=dm_config.data_dir,
-            downsample_n=dm_config.downsample_n,
-            train_frac=dm_config.train_frac,
-            validation_split=dm_config.validation_split,
-            batch_size=dm_config.batch_size,
-            num_workers=dm_config.num_workers,
-            pin_memory=dm_config.pin_memory,
-            image_size=dm_config.image_size,
-        )
-    datamodule.prepare_data()
-    datamodule.setup()
+    logger.info('Instantiating datamodule...')
+    datamodule = instantiate_datamodule(config)
 
-    print('Instantiating model...')
+    logger.info('Instantiating model...')
     net = instantiate_net(config)
     model = instantiate_module(config, net)
-    print(model)
+    logger.debug(model)
 
-    print('Instantiating trainer...')
-    print(config.TrainerConfig)
+    logger.info('Instantiating trainer...')
+    logger.debug(config.TrainerConfig)
     trainer = Trainer(
         min_epochs=config.TrainerConfig.min_epochs,
         max_epochs=config.TrainerConfig.max_epochs,
@@ -98,9 +107,10 @@ def main():
         callbacks=callbacks
     )
 
-    print('Starting training...')
+
+    logger.info('Starting training...')
     trainer.fit(model, datamodule=datamodule)
-    print('Training complete!')
+    logger.info('Training complete!')
 
 
 if __name__ == "__main__":
