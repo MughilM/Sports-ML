@@ -168,6 +168,9 @@ cython_debug/
 #.idea/
 lightning_logs/
 
+# Local data folder
+data/
+
 # Ruff stuff:
 .ruff_cache/
 
